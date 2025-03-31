@@ -1,5 +1,7 @@
 const express = require('express')
-const app = express()
+const PORT = 8080
+const sequelize = require('./db')
+const models = require('./model')
 app.use(express.json())
 
 app.get('/',(req,res)=>{
@@ -8,7 +10,17 @@ app.get('/',(req,res)=>{
 app.get('/fullname',(req,res)=>{
     res.send(`Влад Баргамин`)
 })
-app.listen(process.env.PORT || 8080, () => 
-console.log(`Server start no ${process.env.PORT || 8080}`
-))
-
+app.post('/',async(req,res)=>{
+    const {login,password} = req.body
+    await User.create({login,password})
+})
+async function start() {
+    try {
+        await sequelize.authenticate();
+        await sequelize.sync()
+        app.listen(PORT || 8080, () => console.log(`Server start no ${PORT}`))
+    } catch (error) {
+        console.log(error)
+    }
+}
+start()
